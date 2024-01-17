@@ -2,31 +2,34 @@ package com.kailasnath.locationtracker.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class BusLocation {
+public class LocationCoord {
 
     @Id
-    @GeneratedValue
-    private int bus_id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int loc_id;
+
+    private int r_id;
     private double latitude;
     private double longitude;
 
-    
-    public BusLocation() {
+    public LocationCoord() {
     }
-    public BusLocation(int bus_id, double latitude, double longitude) {
-        this.bus_id = bus_id;
+    public LocationCoord(int loc_id, int r_id, double latitude, double longitude) {
+        this.loc_id = loc_id;
+        this.r_id = r_id;
         this.latitude = latitude;
         this.longitude = longitude;
     }
-    
-    public int getBus_id() {
-        return bus_id;
+
+    public int getLoc_id() {
+        return loc_id;
     }
-    public void setBus_id(int bus_id) {
-        this.bus_id = bus_id;
+    public void setLoc_id(int id) {
+        this.loc_id = id;
     }
     public double getLatitude() {
         return latitude;
@@ -40,9 +43,15 @@ public class BusLocation {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+    public int getR_id() {
+        return r_id;
+    }
+    public void setR_id(int r_id) {
+        this.r_id = r_id;
+    }
 
     @Override
     public String toString() {
-        return "BusLocation [id=" + bus_id + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+        return "Location [id=" + loc_id + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }
