@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.service.BusLocationService;
+import com.kailasnath.locationtracker.service.LocationCoordService;
 
 @Controller
 public class BusLocationController {
@@ -19,9 +20,15 @@ public class BusLocationController {
     @Autowired
     BusLocationService busLocationService;
 
+    @Autowired
+    LocationCoordService locationCoordService;
+
     @PostMapping("update")
     public ResponseEntity<String> updateBusLocation(@NonNull @RequestBody BusLocation busLocation) {
+
         busLocationService.updateLocation(busLocation);
+        locationCoordService.addLocationCoord(busLocation);
+        
         System.out.println("update request received");
         return ResponseEntity.ok("Location Updated");
     }
