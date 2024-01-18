@@ -16,12 +16,16 @@ public class LocationCoordService {
 
     public void addLocationCoord(@NonNull BusLocation busLocation) {
         
+        double latitude = busLocation.getLatitude();
+        double longitude = busLocation.getLongitude();
+
         LocationCoord coord = new LocationCoord();
 
-        coord.setLatitude(busLocation.getLatitude());
-        coord.setLongitude(busLocation.getLongitude());
+        coord.setLatitude(latitude);
+        coord.setLongitude(longitude);
         coord.setR_id(busLocation.getBus_id());
-
-        locationCoordRepo.save(coord);
+        
+        if(locationCoordRepo.countByLatitudeAndLongitude(latitude, longitude) == 0)
+            locationCoordRepo.save(coord);
     }
 }
