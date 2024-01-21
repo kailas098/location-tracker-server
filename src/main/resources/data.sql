@@ -1,1 +1,1 @@
-INSERT INTO bus_location (bus_id, latitude, longitude) VALUES (1, 13.081946, 80.1761154)
+INSERT INTO bus_location (bus_id, latitude, longitude) VALUES (1, 13.0, 80.0)
