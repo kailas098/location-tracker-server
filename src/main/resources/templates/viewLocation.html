@@ -45,18 +45,18 @@
             attribution: 'Bus Tracking System'
         }).addTo(map);
 
-        // var pathCoordinates = [
-        //     [37.7749, -122.4194],
-        //     [37.7849, -122.4194],
-        //     [37.7849, -122.4294],
-        //     [37.7749, -122.4294]
-        // ];
+        var pathCoordinates = /*[[${route}]]*/ [
+            [37.7749, -122.4194],
+            [37.7849, -122.4194],
+            [37.7849, -122.4294],
+            [37.7749, -122.4294]
+        ];
 
-        // // Create a polyline and add it to the map
-        // var path = L.polyline(pathCoordinates, { color: 'red' }).addTo(map);
+        // Create a polyline and add it to the map
+        var path = L.polyline(pathCoordinates, { color: 'red' }).addTo(map);
 
-        // // Optional: Fit the map bounds to the path
-        // map.fitBounds(path.getBounds());
+        // Optional: Fit the map bounds to the path
+        map.fitBounds(path.getBounds());
     </script>
 </body>
 </html>
