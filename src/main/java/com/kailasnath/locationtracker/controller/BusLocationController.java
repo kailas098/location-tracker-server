@@ -43,8 +43,13 @@ public class BusLocationController {
 
     @GetMapping("find")
     public String getLocationView(@RequestParam("id") int id, Model model) {
+
         BusLocation busLocation = busLocationService.getLocation(id);
         model.addAttribute("buslocation", busLocation);
+
+        double[][] route = locationCoordService.getRouteCoords(id);
+        model.addAttribute("route", route);
+        
         return "viewLocation";
     }
 }

@@ -10,48 +10,56 @@ public class LocationCoord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int loc_id;
+    private int locId;
 
-    private int r_id;
+    private int routeNumber;
     private double latitude;
     private double longitude;
 
     public LocationCoord() {
     }
+
     public LocationCoord(int loc_id, int r_id, double latitude, double longitude) {
-        this.loc_id = loc_id;
-        this.r_id = r_id;
+        this.locId = loc_id;
+        this.routeNumber = r_id;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public int getLoc_id() {
-        return loc_id;
+    public int getLocId() {
+        return locId;
     }
-    public void setLoc_id(int id) {
-        this.loc_id = id;
+
+    public void setLocId(int id) {
+        this.locId = id;
     }
+
     public double getLatitude() {
         return latitude;
     }
+
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
+
     public double getLongitude() {
         return longitude;
     }
+
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-    public int getR_id() {
-        return r_id;
+
+    public int getRouteNumber() {
+        return routeNumber;
     }
-    public void setR_id(int r_id) {
-        this.r_id = r_id;
+
+    public void setRouteNumber(int r_id) {
+        this.routeNumber = r_id;
     }
 
     @Override
     public String toString() {
-        return "Location [id=" + loc_id + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+        return "Location [id=" + locId + ", latitude=" + latitude + ", longitude=" + longitude + "]";
     }
 }
