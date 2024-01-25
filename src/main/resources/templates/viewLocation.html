@@ -38,12 +38,19 @@
 
         var map = L.map('map').setView([latitude, longitude], 14); //ideal zoom = 16
 
-        var marker = L.marker([latitude, longitude]).addTo(map);
-        
         //Dark Theme->'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: 'Bus Tracking System'
         }).addTo(map);
+
+        var busMarker = L.icon({
+            iconUrl: '/images/bus.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        })
+
+        var marker = L.marker( [latitude, longitude], {icon: busMarker} ).addTo(map);
 
         var pathCoordinates = /*[[${route}]]*/ [
             [37.7749, -122.4194],
@@ -56,7 +63,7 @@
         var path = L.polyline(pathCoordinates, { color: 'red' }).addTo(map);
 
         // Optional: Fit the map bounds to the path
-        map.fitBounds(path.getBounds());
+        // map.fitBounds(path.getBounds());
     </script>
 </body>
 </html>
