@@ -37,7 +37,7 @@ public class BusLocationController {
         if(busLocationAndRecordStatus.isRecord())
             locationCoordService.addLocationCoord(busLocation);
         
-        System.out.println("update request received");
+        // System.out.println("update request received");
         return ResponseEntity.ok("Location Updated");
     }
 
