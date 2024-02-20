@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="leaflet-assets/leaflet.css" />
+    <title>Chat</title>
+  </head>
+  <body>
+    <label for="id-field">Enter bus id</label>
+    <input type="text" id="id-field" id="" />
+    <div id="map" style="height: 500px; width: 500px"></div>
+
+    <div>
+      <form id="message-form">
+        <label for="username-input">username:</label>
+        <input type="text" id="username-input" /><br />
+        <label for="message-input">Message:</label>
+        <input type="text" id="message-input" /><br />
+        <button type="button" onclick="sendMessage()">Send</button>
+      </form>
+
+      <h2>Chat</h2>
+      <div id="message-container"></div>
+    </div>
+
+    <script src="leaflet-assets/leaflet.js"></script>
+    <script src="sse/app.js"></script>
+    <script>
+      var bus_id = document.getElementById("id-field").value;
+
+      fetch("/find", {
+        method: "get",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({ id: bus_id }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("failed to connect");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          var latitude = data.latitude;
+          var longitude = data.longitude;
+        })
+        .catch((error)=>{
+          console.error("error");
+        });
+
+      var map = L.map("map").setView([latitude, longitude], 14); //ideal zoom = 16
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "Bus Tracking System",
+      }).addTo(map);
+
+      var marker = L.marker([latitude, longitude]).addTo(map);
+    </script>
+    <!-- <script src="app.js"></script> -->
+  </body>
+</html>
