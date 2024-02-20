@@ -9,6 +9,9 @@
   <body>
     <label for="id-field">Enter bus id</label>
     <input type="text" id="id-field" id="" />
+
+    <button type="button" onclick="getBusLocation()">Get Location</button>
+
     <div id="map" style="height: 500px; width: 500px"></div>
 
     <div>
@@ -29,24 +32,8 @@
     <script>
       var bus_id = document.getElementById("id-field").value;
 
-      fetch("/find", {
-        method: "get",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ id: bus_id }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("failed to connect");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          var latitude = data.latitude;
-          var longitude = data.longitude;
-        })
-        .catch((error)=>{
-          console.error("error");
-        });
+      var latitude = 0.0;
+      var longitude = 0.0;
 
       var map = L.map("map").setView([latitude, longitude], 14); //ideal zoom = 16
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -55,6 +42,5 @@
 
       var marker = L.marker([latitude, longitude]).addTo(map);
     </script>
-    <!-- <script src="app.js"></script> -->
   </body>
 </html>

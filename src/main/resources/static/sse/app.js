@@ -29,7 +29,7 @@ const username = usernameImput.value;
 fetch("/send-message", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: username, content: message }),
+    body: { name: username, content: message },
 })
     .then((response) => {
     if (!response.ok) {
@@ -42,21 +42,28 @@ fetch("/send-message", {
     });
 }
 
-window.addEventListener('beforeunload', function(event){
-event.preventDefault();
+function getBusLocation() {
+    var busId = document.getElementById("id-field").value;
 
-this.fetch('/close-emitter',{
-    method:'post',
-    headers:{'Content-type':'application/json'},
-    body:JSON.stringify(source)
-})
-.then(response => {
-    this.window.close();
-})
-.catch(error=>{
-    console.error("closing failed");
-});
-});
+    fetch("/find-bus", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "kailas" }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.log("response error");
+          throw new Error("HTTP-Error: " + response.status);
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.latitude);
+    }).catch((error)=>{
+        console.error("error");
+    });
+  }
 
 class Message {
 constructor(name, content) {

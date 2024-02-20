@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.kailasnath.locationtracker.Model.BusIdRequest;
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
 import com.kailasnath.locationtracker.service.BusLocationService;
@@ -32,7 +32,6 @@ public class BusLocationController {
 
     private List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
-    
     @GetMapping("/subscribe")
     public SseEmitter subscribe() {
         SseEmitter sseEmitter = new SseEmitter();
@@ -82,10 +81,10 @@ public class BusLocationController {
         return "viewLocation";
     }
 
-    @GetMapping("/close-emitter")
-    public ResponseEntity<String> closeEmitter(@RequestBody SseEmitter sseEmitter) {
-        emitters.remove(sseEmitter);
+    @PostMapping("/find-bus")
+    public BusLocation getLocation(@RequestBody BusIdRequest busIdRequest, Model model) {
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        BusLocation busLocation = busLocationService.getLocation(busIdRequest.getId());
+        return busLocation;
     }
 }
