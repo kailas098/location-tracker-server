@@ -10,12 +10,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.kailasnath.locationtracker.Model.BusIdRequest;
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
 import com.kailasnath.locationtracker.service.BusLocationService;
@@ -81,10 +82,11 @@ public class BusLocationController {
         return "viewLocation";
     }
 
-    @PostMapping("/find-bus")
-    public BusLocation getLocation(@RequestBody BusIdRequest busIdRequest, Model model) {
+    @GetMapping("/find-bus/{id}")
+    @ResponseBody
+    public BusLocation getLocation(@PathVariable("id") int id, Model model) {
 
-        BusLocation busLocation = busLocationService.getLocation(busIdRequest.getId());
+        BusLocation busLocation = busLocationService.getLocation(id);
         return busLocation;
     }
 }

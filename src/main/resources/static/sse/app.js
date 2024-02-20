@@ -45,11 +45,7 @@ fetch("/send-message", {
 function getBusLocation() {
     var busId = document.getElementById("id-field").value;
 
-    fetch("/find-bus", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "kailas" }),
-    })
+    fetch("/find-bus/"+busId)
       .then((response) => {
         if (!response.ok) {
           console.log("response error");
@@ -59,7 +55,17 @@ function getBusLocation() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.latitude);
+        console.log(data);
+        
+        latitude = data.latitude;
+        longitude = data.longitude;
+
+        var map = L.map("map").setView([latitude, longitude], 14); //ideal zoom = 16
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "Bus Tracking System",
+        }).addTo(map);
+
+        var marker = L.marker([latitude, longitude]).addTo(map);
     }).catch((error)=>{
         console.error("error");
     });
