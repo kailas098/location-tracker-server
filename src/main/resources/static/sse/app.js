@@ -4,9 +4,10 @@ source.addEventListener("message", function (event) {
   const message = Object.assign(new Message(), JSON.parse(event.data));
   displayMessage(message);
 });
-
+// Object.assign(new Message(), JSON.parse(event.data));
 source.addEventListener("location-updated", function (event) {
-  const locationAndRoutePackage = JSON.parse(event.data);
+  const locationAndRoutePackage = Object.assign(new locationAndRoutePackage(), JSON.parse(event.data));
+
   displayLocation(locationAndRoutePackage.busLocation);
   updateLocation(locationAndRoutePackage.busLocation);
 });
@@ -22,13 +23,13 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 var busMarker = L.icon({
-  iconUrl: "images/bus1.png",
+  iconUrl: "images/bus.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
-var marker = L.marker([latitude, long̥itude], { icon: busMarker }).addTo(map);
+var marker = L.marker([latitude, longitude], { icon: busMarker }).addTo(map);
 
 
 function displayLocation(location) {
@@ -82,7 +83,7 @@ function getBusLocation() {
       displayRoute(data.route);
 
     }).catch((error) => {
-      console.error("error");
+      console.error("bus not with 'id: " + document.getElementById("id-field").value + "' not found");
     });
 }
 
@@ -96,6 +97,13 @@ function updateLocation(data) {
 
   marker.setLatLng([latitude, longitude]);
   map.setView([latitude, longitude], 16);
+}
+
+class locationAndRoutePackage {
+  constructor(busLocation, route) {
+    this.busLocation = busLocation;
+    this.route = route;
+  }
 }
 
 class Message {
