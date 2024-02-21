@@ -27,7 +27,7 @@ public class LocationCoordService {
         coord.setLongitude(longitude);
         coord.setRouteNumber(busLocation.getBus_id());
 
-        if (locationCoordRepo.countByLatitudeAndLongitude(latitude, longitude) == 0)
+        if (locationCoordRepo.countByLatitudeAndLongitude(latitude, longitude) <= 0)
             locationCoordRepo.save(coord);
     }
 

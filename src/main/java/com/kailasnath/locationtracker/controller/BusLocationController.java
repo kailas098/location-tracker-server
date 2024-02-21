@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
+import com.kailasnath.locationtracker.Model.LocationAndRoutePackage;
 import com.kailasnath.locationtracker.service.BusLocationService;
 import com.kailasnath.locationtracker.service.LocationCoordService;
 
@@ -54,9 +55,11 @@ public class BusLocationController {
                 busLocationAndRecordStatus.getLatitude(),
                 busLocationAndRecordStatus.getLongitude());
 
+        LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation);
+
         for (SseEmitter sseEmitter : emitters) {
             try {
-                sseEmitter.send(SseEmitter.event().name("location-updated").data(busLocation));
+                sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
             } catch (IOException e) {
                 sseEmitter.complete();
                 e.printStackTrace();
@@ -71,7 +74,7 @@ public class BusLocationController {
         return ResponseEntity.ok("Location Updated");
     }
 
-    @GetMapping("find")
+    @GetMapping("/find")
     public String getLocationView(@RequestParam("id") int id, Model model) {
 
         BusLocation busLocation = busLocationService.getLocation(id);
@@ -85,9 +88,12 @@ public class BusLocationController {
 
     @GetMapping("/find-bus/{id}")
     @ResponseBody
-    public BusLocation getLocation(@PathVariable("id") int id, Model model) {
+    public LocationAndRoutePackage getLocation(@PathVariable("id") int id, Model model) {
 
         BusLocation busLocation = busLocationService.getLocation(id);
-        return busLocation;
+        double[][] route = locationCoordService.getRouteCoords(id);
+
+        LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
+        return locationAndRoutePackage;
     }
 }
