@@ -39,6 +39,7 @@ public class BusLocationController {
 
         emitters.add(sseEmitter);
 
+        System.out.println(sseEmitter.toString());
         sseEmitter.onCompletion(() -> emitters.remove(sseEmitter));
         sseEmitter.onTimeout(() -> emitters.remove(sseEmitter));
         return sseEmitter;
@@ -81,6 +82,7 @@ public class BusLocationController {
         double[][] route = locationCoordService.getRouteCoords(id);
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
+
         return locationAndRoutePackage;
     }
 }

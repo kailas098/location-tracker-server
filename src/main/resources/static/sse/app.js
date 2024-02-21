@@ -4,9 +4,9 @@ source.addEventListener("message", function (event) {
   const message = Object.assign(new Message(), JSON.parse(event.data));
   displayMessage(message);
 });
-// Object.assign(new Message(), JSON.parse(event.data));
+
 source.addEventListener("location-updated", function (event) {
-  const locationAndRoutePackage = Object.assign(new locationAndRoutePackage(), JSON.parse(event.data));
+  const locationAndRoutePackage = Object.assign(new LocationAndRoutePackage(), JSON.parse(event.data));
 
   displayLocation(locationAndRoutePackage.busLocation);
   updateLocation(locationAndRoutePackage.busLocation);
@@ -37,7 +37,7 @@ function displayLocation(location) {
   locationContainer.innerHTML =
     "<h4> lati: " +
     location.latitude +
-    ", longi: " +
+    "<br>longi: " +
     location.longitude +
     "<h4>";
 }
@@ -99,7 +99,7 @@ function updateLocation(data) {
   map.setView([latitude, longitude], 16);
 }
 
-class locationAndRoutePackage {
+class LocationAndRoutePackage {
   constructor(busLocation, route) {
     this.busLocation = busLocation;
     this.route = route;

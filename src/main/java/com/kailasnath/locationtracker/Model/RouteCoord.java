@@ -6,7 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class RouteCood {
+public class RouteCoord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,10 +16,10 @@ public class RouteCood {
     private double latitude;
     private double longitude;
 
-    public RouteCood() {
+    public RouteCoord() {
     }
 
-    public RouteCood(int loc_id, int r_id, double latitude, double longitude) {
+    public RouteCoord(int loc_id, int r_id, double latitude, double longitude) {
         this.locId = loc_id;
         this.routeNumber = r_id;
         this.latitude = latitude;

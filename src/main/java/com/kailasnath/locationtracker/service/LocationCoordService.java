@@ -7,21 +7,21 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import com.kailasnath.locationtracker.Model.BusLocation;
-import com.kailasnath.locationtracker.Model.RouteCood;
-import com.kailasnath.locationtracker.Repository.LocationCoordRepo;
+import com.kailasnath.locationtracker.Model.RouteCoord;
+import com.kailasnath.locationtracker.Repository.RouteCoordRepo;
 
 @Service
 public class LocationCoordService {
 
     @Autowired
-    LocationCoordRepo locationCoordRepo;
+    RouteCoordRepo locationCoordRepo;
 
     public void addLocationCoord(@NonNull BusLocation busLocation) {
 
         double latitude = busLocation.getLatitude();
         double longitude = busLocation.getLongitude();
 
-        RouteCood coord = new RouteCood();
+        RouteCoord coord = new RouteCoord();
 
         coord.setLatitude(latitude);
         coord.setLongitude(longitude);
@@ -33,11 +33,11 @@ public class LocationCoordService {
 
     public double[][] getRouteCoords(int r_id) {
 
-        List<RouteCood> route = locationCoordRepo.findByRouteNumber(r_id);
+        List<RouteCoord> route = locationCoordRepo.findByRouteNumber(r_id);
         double[][] res = new double[route.size()][2];
 
         for (int i = 0; i < route.size(); i++) {
-            RouteCood coordinate = route.get(i);
+            RouteCoord coordinate = route.get(i);
             res[i] = new double[] { coordinate.getLatitude(), coordinate.getLongitude() };
         }
 
