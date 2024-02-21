@@ -3,17 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="leaflet-assets/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="sse/style.css" />
+
     <title>Chat</title>
   </head>
   <body>
-    <label for="id-field">Enter bus id</label>
-    <input type="text" id="id-field" id="" />
+    <div id="map-container">
+      <div id="bus-details">
+        <label for="id-field">Enter bus id</label>
+        <input type="text" id="id-field" id="" />
 
-    <button type="button" onclick="getBusLocation()">Get Location</button>
-
-    <div id="map" style="height: 500px; width: 500px"></div>
-
+        <button type="button" onclick="getBusLocation()">Get Location</button>
+      </div>
+      <div id="map"></div>
+    </div>
     <div>
       <form id="message-form">
         <label for="username-input">username:</label>
@@ -26,8 +35,11 @@
       <h2>Chat</h2>
       <div id="message-container"></div>
     </div>
-
-    <script src="leaflet-assets/leaflet.js"></script>
-    <script src="sse/app.js"></script>
   </body>
 </html>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+<script src="sse/app.js"></script>

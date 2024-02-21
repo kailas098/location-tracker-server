@@ -48,6 +48,7 @@ public class BusLocationController {
     public ResponseEntity<String> updateBusLocation(
             @NonNull @RequestBody BusLocationAndRecordStatus busLocationAndRecordStatus) {
 
+        // System.out.println("update received");
         BusLocation busLocation = new BusLocation(
                 busLocationAndRecordStatus.getBus_id(),
                 busLocationAndRecordStatus.getLatitude(),

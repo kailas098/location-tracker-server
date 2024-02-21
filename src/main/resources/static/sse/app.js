@@ -8,7 +8,19 @@ displayMessage(message);
 source.addEventListener("location-updated", function (event) {
 const location = JSON.parse(event.data);
 displayLocation(location);
+updateLocation(location);
 });
+
+var latitude = 0.0;
+var longitude = 0.0;
+
+var map = L.map("map").setView([latitude, longitude], 16); //ideal zoom = 16
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+attribution: "Bus Tracking System",
+}).addTo(map);
+
+var marker = L.marker([latitude, longitude]).addTo(map);
 
 function displayLocation(location) {
 const locationContainer = document.getElementById("message-container");
@@ -55,20 +67,21 @@ function getBusLocation() {
         return response.json();
       })
       .then((data) => {
+
         console.log(data);
-        
-        latitude = data.latitude;
-        longitude = data.longitude;
+        updateLocation(data);
 
-        var map = L.map("map").setView([latitude, longitude], 14); //ideal zoom = 16
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "Bus Tracking System",
-        }).addTo(map);
-
-        var marker = L.marker([latitude, longitude]).addTo(map);
     }).catch((error)=>{
         console.error("error");
     });
+  }
+
+  function updateLocation(data){
+        latitude = data.latitude;
+        longitude = data.longitude;
+
+        marker.setLatLng([latitude,longitude]);
+        map.setView([latitude, longitude],16);
   }
 
 class Message {
