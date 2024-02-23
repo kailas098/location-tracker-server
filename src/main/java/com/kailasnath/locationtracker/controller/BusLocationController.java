@@ -2,13 +2,14 @@ package com.kailasnath.locationtracker.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,13 +34,19 @@ public class BusLocationController {
 
     private List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
-    @GetMapping("/subscribe")
-    public SseEmitter subscribe() {
+    private Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
+
+    private Map<String, Integer> clientBusMap = new ConcurrentHashMap<>();
+
+    @GetMapping("/subscribe/{clientId}")
+    public SseEmitter subscribe(@PathVariable("clientId") String clientId) {
         SseEmitter sseEmitter = new SseEmitter();
+
+        emitterMap.put(clientId, sseEmitter);
+        System.out.println("clientId: " + clientId);
 
         emitters.add(sseEmitter);
 
-        System.out.println(sseEmitter.toString());
         sseEmitter.onCompletion(() -> emitters.remove(sseEmitter));
         sseEmitter.onTimeout(() -> emitters.remove(sseEmitter));
         return sseEmitter;
@@ -50,12 +57,22 @@ public class BusLocationController {
             @NonNull @RequestBody BusLocationAndRecordStatus busLocationAndRecordStatus) {
 
         // System.out.println("update received");
+
         BusLocation busLocation = new BusLocation(
-                busLocationAndRecordStatus.getBus_id(),
+                busLocationAndRecordStatus.getBusId(),
                 busLocationAndRecordStatus.getLatitude(),
                 busLocationAndRecordStatus.getLongitude());
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation);
+
+        /*
+         * TODO
+         * 1) use clientId-busId map to send updates to the clients subscribes to that
+         * busId.
+         * 2) traverse through clientId-busId map find the if the busId matches with the
+         * record's busId then push it to that client.
+         * by using emitterMap.
+         */
 
         for (SseEmitter sseEmitter : emitters) {
             try {
@@ -74,12 +91,27 @@ public class BusLocationController {
         return ResponseEntity.ok("Location Updated");
     }
 
-    @GetMapping("/find-bus/{id}")
+    @GetMapping("/find-bus/{busId}")
     @ResponseBody
-    public LocationAndRoutePackage getLocation(@PathVariable("id") int id, Model model) {
+    public LocationAndRoutePackage getLocation(@PathVariable("busId") int busId) {
 
-        BusLocation busLocation = busLocationService.getLocation(id);
-        double[][] route = locationCoordService.getRouteCoords(id);
+        BusLocation busLocation = busLocationService.getLocation(busId);
+        double[][] route = locationCoordService.getRouteCoords(busId);
+
+        LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
+
+        return locationAndRoutePackage;
+    }
+
+    @GetMapping("/find-bus/{clientId}/{busId}")
+    @ResponseBody
+    public LocationAndRoutePackage getLocation(@PathVariable("clientId") String clientId,
+            @PathVariable("busId") int busId) {
+
+        BusLocation busLocation = busLocationService.getLocation(busId);
+        double[][] route = locationCoordService.getRouteCoords(busId);
+
+        clientBusMap.put(clientId, busId);
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
 

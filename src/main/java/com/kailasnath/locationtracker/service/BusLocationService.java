@@ -18,6 +18,6 @@ public class BusLocationService {
     }
 
     public BusLocation getLocation(int id) {
-        return busLocationRepo.findById(id).get();
+        return busLocationRepo.findById(id).orElse(new BusLocation(0,0.0,0.0));
     }
 }

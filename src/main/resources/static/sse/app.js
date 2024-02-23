@@ -1,10 +1,5 @@
-var source = new EventSource("/subscribe");
-
-source.addEventListener("message", function (event) {
-  const message = Object.assign(new Message(), JSON.parse(event.data));
-  displayMessage(message);
-});
-
+var clientID = generateClientId();
+var source = new EventSource("/subscribe/" + clientID);
 source.addEventListener("location-updated", function (event) {
   const locationAndRoutePackage = Object.assign(new LocationAndRoutePackage(), JSON.parse(event.data));
 
@@ -15,24 +10,32 @@ source.addEventListener("location-updated", function (event) {
 
 var latitude = 0.0;
 var longitude = 0.0;
-
 var map = L.map("map").setView([latitude, longitude], 16);
-
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "Bus Tracking System",
 }).addTo(map);
-
 document.getElementsByClassName('leaflet-control-attribution')[0].style.display = 'none';
-
 var busMarker = L.icon({
   iconUrl: "images/bus.png",
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
-
 var marker = L.marker([latitude, longitude], { icon: busMarker }).addTo(map);
 
+
+function generateClientId() {
+  let stringSet = "abcdefghijklmnopqrstuvwxyz";
+  let res = "";
+  let min = 0;
+  let max = 25;
+
+  for (let i = 0; i < 2; i++) {
+    res += stringSet[Math.floor(Math.random() * (max - min + 1)) + min];
+    res += Math.floor(Math.random() * 9) + 1
+  }
+  return res;
+}
 
 function displayLocation(location) {
   const locationContainer = document.getElementById("message-container");
@@ -69,7 +72,7 @@ function sendMessage() {
 function getBusLocation() {
   var busId = document.getElementById("id-field").value;
 
-  fetch("/find-bus/" + busId)
+  fetch("/find-bus/" + clientID + "/" + busId)
     .then((response) => {
       if (!response.ok) {
         console.log("response error");

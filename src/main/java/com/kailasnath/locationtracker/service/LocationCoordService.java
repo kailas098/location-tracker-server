@@ -25,15 +25,15 @@ public class LocationCoordService {
 
         coord.setLatitude(latitude);
         coord.setLongitude(longitude);
-        coord.setRouteNumber(busLocation.getBus_id());
+        coord.setRouteNumber(busLocation.getBusId());
 
         if (locationCoordRepo.countByLatitudeAndLongitude(latitude, longitude) <= 0)
             locationCoordRepo.save(coord);
     }
 
-    public double[][] getRouteCoords(int r_id) {
+    public double[][] getRouteCoords(int routeId) {
 
-        List<RouteCoord> route = locationCoordRepo.findByRouteNumber(r_id);
+        List<RouteCoord> route = locationCoordRepo.findByRouteNumber(routeId);
         double[][] res = new double[route.size()][2];
 
         for (int i = 0; i < route.size(); i++) {
