@@ -22,6 +22,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "Bus Tracking System",
 }).addTo(map);
 
+document.getElementsByClassName('leaflet-control-attribution')[0].style.display = 'none';
+
 var busMarker = L.icon({
   iconUrl: "images/bus.png",
   iconSize: [32, 32],
