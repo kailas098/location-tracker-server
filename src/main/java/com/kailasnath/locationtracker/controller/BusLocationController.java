@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
 import com.kailasnath.locationtracker.Model.LocationAndRoutePackage;
-import com.kailasnath.locationtracker.Model.UpdateSender;
+import com.kailasnath.locationtracker.ThreadClasses.UpdateSender;
 import com.kailasnath.locationtracker.service.BusLocationService;
 import com.kailasnath.locationtracker.service.LocationCoordService;
 
@@ -48,8 +48,9 @@ public class BusLocationController {
 
         emitters.add(sseEmitter);
 
-        sseEmitter.onCompletion(() -> emitters.remove(sseEmitter));
-        sseEmitter.onTimeout(() -> emitters.remove(sseEmitter));
+        sseEmitter.onCompletion(() -> emitterMap.remove(clientId));
+        sseEmitter.onTimeout(() -> emitterMap.remove(clientId));
+
         return sseEmitter;
     }
 
@@ -66,22 +67,16 @@ public class BusLocationController {
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation);
 
-        /*
-         * TODO
-         * 1) use clientId-busId map to send updates to the clients subscribes to that
-         * busId.
-         * 2) traverse through clientId-busId map find the if the busId matches with the
-         * record's busId then push it to that client.
-         * by using emitterMap.
-         */
         Iterator<Map.Entry<String, Integer>> itr = clientBusMap.entrySet().iterator();
         while (itr.hasNext()) {
             Map.Entry<String, Integer> entry = itr.next();
 
             if (entry.getValue() == busLocation.getBusId()) {
                 SseEmitter sseEmitter = emitterMap.get(entry.getKey());
-                UpdateSender updateSender = new UpdateSender(sseEmitter, locationAndRoutePackage);
-                updateSender.start();
+                if (sseEmitter != null) {
+                    UpdateSender updateSender = new UpdateSender(sseEmitter, locationAndRoutePackage);
+                    updateSender.start();
+                }
             }
         }
 

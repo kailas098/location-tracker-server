@@ -1,8 +1,10 @@
-package com.kailasnath.locationtracker.Model;
+package com.kailasnath.locationtracker.ThreadClasses;
 
 import java.io.IOException;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.kailasnath.locationtracker.Model.LocationAndRoutePackage;
 
 public class UpdateSender extends Thread {
 
@@ -17,8 +19,6 @@ public class UpdateSender extends Thread {
     @SuppressWarnings("null")
     @Override
     public void run() {
-        // TODO Auto-generated method stub
-
         try {
             sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
         } catch (IOException e) {

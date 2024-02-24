@@ -22,6 +22,7 @@ var busMarker = L.icon({
   popupAnchor: [0, -32],
 });
 var marker = L.marker([latitude, longitude], { icon: busMarker }).addTo(map);
+var path = L.polyline([[latitude, longitude]], { color: 'red' }).addTo(map);
 
 
 function generateClientId() {
@@ -93,7 +94,8 @@ function getBusLocation() {
 }
 
 function displayRoute(route) {
-  var path = L.polyline(route, { color: 'red' }).addTo(map);
+  map.removeLayer(path);
+  path = L.polyline(route, { color: 'red' }).addTo(map);
 }
 
 function updateLocation(data) {
