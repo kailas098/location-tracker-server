@@ -1,6 +1,6 @@
 package com.kailasnath.locationtracker.controller;
 
-import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
 import com.kailasnath.locationtracker.Model.LocationAndRoutePackage;
+import com.kailasnath.locationtracker.Model.UpdateSender;
 import com.kailasnath.locationtracker.service.BusLocationService;
 import com.kailasnath.locationtracker.service.LocationCoordService;
 
@@ -73,13 +74,14 @@ public class BusLocationController {
          * record's busId then push it to that client.
          * by using emitterMap.
          */
+        Iterator<Map.Entry<String, Integer>> itr = clientBusMap.entrySet().iterator();
+        while (itr.hasNext()) {
+            Map.Entry<String, Integer> entry = itr.next();
 
-        for (SseEmitter sseEmitter : emitters) {
-            try {
-                sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
-            } catch (IOException e) {
-                sseEmitter.complete();
-                e.printStackTrace();
+            if (entry.getValue() == busLocation.getBusId()) {
+                SseEmitter sseEmitter = emitterMap.get(entry.getKey());
+                UpdateSender updateSender = new UpdateSender(sseEmitter, locationAndRoutePackage);
+                updateSender.start();
             }
         }
 
@@ -91,18 +93,6 @@ public class BusLocationController {
         return ResponseEntity.ok("Location Updated");
     }
 
-    @GetMapping("/find-bus/{busId}")
-    @ResponseBody
-    public LocationAndRoutePackage getLocation(@PathVariable("busId") int busId) {
-
-        BusLocation busLocation = busLocationService.getLocation(busId);
-        double[][] route = locationCoordService.getRouteCoords(busId);
-
-        LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
-
-        return locationAndRoutePackage;
-    }
-
     @GetMapping("/find-bus/{clientId}/{busId}")
     @ResponseBody
     public LocationAndRoutePackage getLocation(@PathVariable("clientId") String clientId,
@@ -112,6 +102,9 @@ public class BusLocationController {
         double[][] route = locationCoordService.getRouteCoords(busId);
 
         clientBusMap.put(clientId, busId);
+
+        System.out.println(clientBusMap);
+        System.out.println(emitterMap);
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
 
