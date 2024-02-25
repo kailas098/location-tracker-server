@@ -98,9 +98,6 @@ public class BusLocationController {
 
         clientBusMap.put(clientId, busId);
 
-        System.out.println(clientBusMap);
-        System.out.println(emitterMap);
-
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
 
         return locationAndRoutePackage;

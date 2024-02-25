@@ -28,12 +28,10 @@ var path = L.polyline([[latitude, longitude]], { color: 'red' }).addTo(map);
 function generateClientId() {
   let stringSet = "abcdefghijklmnopqrstuvwxyz";
   let res = "";
-  let min = 0;
-  let max = 25;
 
   for (let i = 0; i < 2; i++) {
-    res += stringSet[Math.floor(Math.random() * (max - min + 1)) + min];
-    res += Math.floor(Math.random() * 9) + 1
+    res += stringSet[Math.floor(Math.random() * 26)];
+    res += Math.floor(Math.random() * 10);
   }
   return res;
 }
