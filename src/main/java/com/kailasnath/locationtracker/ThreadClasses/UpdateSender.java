@@ -22,7 +22,6 @@ public class UpdateSender extends Thread {
         try {
             sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
         } catch (IOException e) {
-            sseEmitter.complete();
             e.printStackTrace();
         }
         

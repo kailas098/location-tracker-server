@@ -1,11 +1,8 @@
 package com.kailasnath.locationtracker.controller;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -33,8 +30,6 @@ public class BusLocationController {
     @Autowired
     LocationCoordService locationCoordService;
 
-    private List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-
     private Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
     private Map<String, Integer> clientBusMap = new ConcurrentHashMap<>();
@@ -45,8 +40,6 @@ public class BusLocationController {
 
         emitterMap.put(clientId, sseEmitter);
         System.out.println("clientId: " + clientId);
-
-        emitters.add(sseEmitter);
 
         sseEmitter.onCompletion(() -> emitterMap.remove(clientId));
         sseEmitter.onTimeout(() -> emitterMap.remove(clientId));
@@ -97,6 +90,9 @@ public class BusLocationController {
         double[][] route = locationCoordService.getRouteCoords(busId);
 
         clientBusMap.put(clientId, busId);
+
+        // System.out.println(clientBusMap);
+        // System.out.println(emitterMap);
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
 
