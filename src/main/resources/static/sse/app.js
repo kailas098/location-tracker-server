@@ -1,12 +1,14 @@
 var clientID = generateClientId();
 var source = new EventSource("/subscribe/" + clientID);
 source.addEventListener("location-updated", function (event) {
-  const locationAndRoutePackage = Object.assign(new LocationAndRoutePackage(), JSON.parse(event.data));
+  const locationAndRoutePackage = Object.assign(
+    new LocationAndRoutePackage(),
+    JSON.parse(event.data)
+  );
 
   displayLocation(locationAndRoutePackage.busLocation);
   updateLocation(locationAndRoutePackage.busLocation);
 });
-
 
 var latitude = 0.0;
 var longitude = 0.0;
@@ -14,7 +16,9 @@ var map = L.map("map").setView([latitude, longitude], 16);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "Bus Tracking System",
 }).addTo(map);
-document.getElementsByClassName('leaflet-control-attribution')[0].style.display = 'none';
+document.getElementsByClassName(
+  "leaflet-control-attribution"
+)[0].style.display = "none";
 var busMarker = L.icon({
   iconUrl: "images/bus.png",
   iconSize: [32, 32],
@@ -22,8 +26,7 @@ var busMarker = L.icon({
   popupAnchor: [0, -32],
 });
 var marker = L.marker([latitude, longitude], { icon: busMarker }).addTo(map);
-var path = L.polyline([[latitude, longitude]], { color: 'red' }).addTo(map);
-
+var path = L.polyline([[latitude, longitude]], { color: "red" }).addTo(map);
 
 function generateClientId() {
   let stringSet = "abcdefghijklmnopqrstuvwxyz";
@@ -69,7 +72,7 @@ function sendMessage() {
 }
 
 function getBusLocation() {
-  var busId = document.getElementById("id-field").value;
+  let busId = document.getElementById("id-field").value;
 
   fetch("/find-bus/" + clientID + "/" + busId)
     .then((response) => {
@@ -81,19 +84,22 @@ function getBusLocation() {
       return response.json();
     })
     .then((data) => {
-
       console.log(data);
       updateLocation(data.busLocation);
       displayRoute(data.route);
-
-    }).catch((error) => {
-      console.error("bus not with 'id: " + document.getElementById("id-field").value + "' not found");
+    })
+    .catch((error) => {
+      console.error(
+        "bus not with 'id: " +
+        document.getElementById("id-field").value +
+        "' not found"
+      );
     });
 }
 
 function displayRoute(route) {
   map.removeLayer(path);
-  path = L.polyline(route, { color: 'red' }).addTo(map);
+  path = L.polyline(route, { color: "red" }).addTo(map);
 }
 
 function updateLocation(data) {
@@ -104,13 +110,13 @@ function updateLocation(data) {
   map.setView([latitude, longitude], 16);
 }
 
+
 class LocationAndRoutePackage {
   constructor(busLocation, route) {
     this.busLocation = busLocation;
     this.route = route;
   }
 }
-
 class Message {
   constructor(name, content) {
     this.name = name;

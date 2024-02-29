@@ -1,8 +1,11 @@
 package com.kailasnath.locationtracker.controller;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -17,7 +20,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
 import com.kailasnath.locationtracker.Model.LocationAndRoutePackage;
-import com.kailasnath.locationtracker.ThreadClasses.UpdateSender;
 import com.kailasnath.locationtracker.service.BusLocationService;
 import com.kailasnath.locationtracker.service.LocationCoordService;
 
@@ -30,16 +32,16 @@ public class BusLocationController {
     @Autowired
     LocationCoordService locationCoordService;
 
-    private Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
+    Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
-    private Map<String, Integer> clientBusMap = new ConcurrentHashMap<>();
+    Map<String, Integer> clientBusMap = new ConcurrentHashMap<>();
 
     @GetMapping("/subscribe/{clientId}")
     public SseEmitter subscribe(@PathVariable("clientId") String clientId) {
         SseEmitter sseEmitter = new SseEmitter();
 
         emitterMap.put(clientId, sseEmitter);
-        System.out.println("clientId: " + clientId);
+        System.out.println("subcribed clientId: " + clientId);
 
         sseEmitter.onCompletion(() -> emitterMap.remove(clientId));
         sseEmitter.onTimeout(() -> emitterMap.remove(clientId));
@@ -67,8 +69,15 @@ public class BusLocationController {
             if (entry.getValue() == busLocation.getBusId()) {
                 SseEmitter sseEmitter = emitterMap.get(entry.getKey());
                 if (sseEmitter != null) {
-                    UpdateSender updateSender = new UpdateSender(sseEmitter, locationAndRoutePackage);
-                    updateSender.start();
+                    try {
+                        sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
+                    } catch (ClientAbortException e) {
+                        System.out.println("Client removed: "+entry.getKey()+", "+e.getMessage());
+                        clientBusMap.remove(entry.getKey());
+
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
@@ -91,8 +100,8 @@ public class BusLocationController {
 
         clientBusMap.put(clientId, busId);
 
-        // System.out.println(clientBusMap);
-        // System.out.println(emitterMap);
+        System.out.println(clientBusMap);
+        System.out.println(emitterMap);
 
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
 
