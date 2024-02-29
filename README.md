@@ -12,13 +12,13 @@ The Spring Location Application is built using the Spring MVC framework, providi
 
 The application incorporates a location service that retrieves data about specific geographic locations. This data include coordinates related to the locations.
 
-### 2. Spring MVC
+### 2. SSE
 
-The project leverages the Spring MVC pattern to handle web requests and responses. This ensures a clean separation of concerns and facilitates the development of RESTful APIs for location-related functionalities.
+The project leverages SSE (Server Sent Events) That will update all the clients whenever there is an update from the driver's device.
 
 ### 3. Responsive User Interface
 
-The user interface is designed using the integration of Spring's Thymeleaf templating engine, the application dynamically generates HTML pages to present location information.
+The user interface is designed using HTML, CSS and JavaScript, the application gets location updates from the server and instantly updates the UI.
 
 ### 4. Javascripts's leaflet framework Integration
 
@@ -40,8 +40,7 @@ To use the Spring Location Application:
 ## Technologies Used
 
 - **Spring Framework:** A comprehensive framework for building enterprise Java applications.
-- **Spring MVC:** A module within the Spring Framework for developing web applications.
-- **Thymeleaf:** A modern server-side Java template engine for web and standalone environments.
+- **Spring SSE:** A module within the Spring Framework for pushing data to the clients from the server.
 - **Leaflet:** Integration with Leaflet to display location data on an interactive map.
 
 ## Getting Started
@@ -49,8 +48,8 @@ To use the Spring Location Application:
 To set up the project locally, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/kailas098/location-tracker`
-2. Navigate to the project directory: `cd location-tracker`
-3. Access the application in your browser: `http://localhost:8080/find?id=1`
+2. Navigate to the project directory: `cd Location-Tracker\src\main\java\com\kailasnath\locationtracker\LocationTrackerApplication`
+3. Access the application in your browser: `http://localhost:8080/index.html`
 
 ---
 
