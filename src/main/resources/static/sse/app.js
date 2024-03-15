@@ -1,4 +1,16 @@
-var clientID = generateClientId();
+const urlData = new URLSearchParams(window.location.search);
+const clientID = urlData.get("id");
+const token = urlData.get("token");
+console.log(clientID, token);
+
+fetch("/validate/" + clientID + "/" + token)
+  .then((response) => {
+    if (!response.ok) {
+      alert("Login first");
+      window.location.href = "login.html";
+    }
+  })
+
 var source = new EventSource("/subscribe/" + clientID);
 source.addEventListener("location-updated", function (event) {
   const locationAndRoutePackage = Object.assign(
@@ -27,17 +39,6 @@ var busMarker = L.icon({
 });
 var marker = L.marker([latitude, longitude], { icon: busMarker }).addTo(map);
 var path = L.polyline([[latitude, longitude]], { color: "red" }).addTo(map);
-
-function generateClientId() {
-  let stringSet = "abcdefghijklmnopqrstuvwxyz";
-  let res = "";
-
-  for (let i = 0; i < 2; i++) {
-    res += stringSet[Math.floor(Math.random() * 26)];
-    res += Math.floor(Math.random() * 10);
-  }
-  return res;
-}
 
 function displayLocation(location) {
   const locationContainer = document.getElementById("message-container");
@@ -76,11 +77,13 @@ function getBusLocation() {
 
   fetch("/find-bus/" + clientID + "/" + busId)
     .then((response) => {
-      if (!response.ok) {
-        console.log("response error");
-        throw new Error("HTTP-Error: " + response.status);
+      console.log(response);
+      if (response.status == 404) {
+        throw new Error("Not found");
       }
-
+      if (response.status == 401) {
+        throw new Error("Not authorized.");
+      }
       return response.json();
     })
     .then((data) => {
@@ -89,10 +92,11 @@ function getBusLocation() {
       displayRoute(data.route);
     })
     .catch((error) => {
+      alert(error);
       console.error(
-        "bus not with 'id: " +
+        "bus not with id: " +
         document.getElementById("id-field").value +
-        "' not found"
+        " not found"
       );
     });
 }

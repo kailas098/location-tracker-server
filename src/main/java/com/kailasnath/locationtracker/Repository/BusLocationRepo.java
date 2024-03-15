@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.kailasnath.locationtracker.Model.BusLocation;
 
 @Repository
-public interface BusLocationRepo extends JpaRepository<BusLocation, Integer>{
+public interface BusLocationRepo extends JpaRepository<BusLocation, Integer> {
 
 }

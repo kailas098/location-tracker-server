@@ -2,6 +2,7 @@ package com.kailasnath.locationtracker.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class BusLocation {
+@Table(name = "token_manager_tbl")
+public class TokenManager {
 
     @Id
-    private int busId;
-    private double latitude;
-    private double longitude;
+    private int clientId;
+    private String token;
 }
