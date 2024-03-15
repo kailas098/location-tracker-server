@@ -69,7 +69,6 @@ public class BusLocationController {
         SseEmitter sseEmitter = new SseEmitter();
 
         emitterMap.put(clientId, sseEmitter);
-
         System.out.println("subcribed clientId: " + clientId);
 
         sseEmitter.onCompletion(() -> emitterMap.remove(clientId));
