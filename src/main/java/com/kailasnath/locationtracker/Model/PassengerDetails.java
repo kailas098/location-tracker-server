@@ -10,10 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class BusLocation {
+public class PassengerDetails {
 
     @Id
+    private int id;
+    private String name;
+    private String password;
     private int busId;
-    private double latitude;
-    private double longitude;
 }

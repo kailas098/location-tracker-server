@@ -15,5 +15,6 @@ public class LocationTrackerApplication {
  * TODO
  * 
  * 1) Add a color field in BLRS (or) assign color based on busId
- * 2) Connect to MySql DB.
+ * 2) Add messaging.
+ * 
  */
