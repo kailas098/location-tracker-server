@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.kailasnath.locationtracker.Model.TokenManager;
 
-public interface TokenRepo extends JpaRepository<TokenManager, Integer> {
-
+public interface TokenManagerRepo extends JpaRepository<TokenManager, Integer> {
+    
 }
