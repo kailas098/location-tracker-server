@@ -1,14 +1,19 @@
 const urlData = new URLSearchParams(window.location.search);
 const clientID = urlData.get("id");
 const token = urlData.get("token");
-console.log(clientID, token);
 
 fetch("/validate/" + clientID + "/" + token)
   .then((response) => {
-    if (!response.ok) {
-      alert("Login first");
-      window.location.href = "login.html";
+    if (response.status == 409) {
+      throw new Error("Token already");
     }
+    if (!response.ok) {
+      throw new Error("Login first");
+    }
+  })
+  .catch((error) => {
+    alert("Login first.");
+    window.location.href = "login.html";
   })
 
 var source = new EventSource("/subscribe/" + clientID);

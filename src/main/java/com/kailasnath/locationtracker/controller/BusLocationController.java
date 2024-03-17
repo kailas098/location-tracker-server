@@ -2,11 +2,12 @@ package com.kailasnath.locationtracker.controller;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -28,11 +29,16 @@ import com.kailasnath.locationtracker.service.LocationCoordService;
 @Controller
 public class BusLocationController {
 
-    @Autowired
     BusLocationService busLocationService;
 
-    @Autowired
     LocationCoordService locationCoordService;
+
+    public BusLocationController(BusLocationService busLocationService, LocationCoordService locationCoordService) {
+        this.busLocationService = busLocationService;
+        this.locationCoordService = locationCoordService;
+    }
+
+    List<String> tokens = new CopyOnWriteArrayList<>();
 
     Map<Integer, SseEmitter> emitterMap = new ConcurrentHashMap<>();
 
@@ -46,7 +52,6 @@ public class BusLocationController {
     @PostMapping("/login")
     public String login(@RequestParam("id") int id, @RequestParam("pass") String pass) {
         if (!busLocationService.validate(id, pass)) {
-            System.out.println("invalid pass");
             return "redirect:login.html";
         }
 
@@ -58,9 +63,13 @@ public class BusLocationController {
     public ResponseEntity<String> validate(@PathVariable("clientId") int clientId,
             @PathVariable("token") String token) {
 
+        if (tokens.contains(token))
+            return new ResponseEntity<>("Connection already in use", HttpStatus.CONFLICT);
+
         if (!busLocationService.validateToken(clientId, token))
             return new ResponseEntity<>("not authorized", HttpStatus.UNAUTHORIZED);
 
+        tokens.add(token);
         return new ResponseEntity<>("authorized", HttpStatus.OK);
     }
 
@@ -69,6 +78,7 @@ public class BusLocationController {
         SseEmitter sseEmitter = new SseEmitter();
 
         emitterMap.put(clientId, sseEmitter);
+
         System.out.println("subcribed clientId: " + clientId);
 
         sseEmitter.onCompletion(() -> emitterMap.remove(clientId));
@@ -95,15 +105,21 @@ public class BusLocationController {
             Map.Entry<Integer, Integer> entry = itr.next();
 
             if (entry.getValue() == busLocation.getBusId()) {
-                SseEmitter sseEmitter = emitterMap.get(entry.getKey());
+                int clientId = entry.getKey();
+                SseEmitter sseEmitter = emitterMap.get(clientId);
                 if (sseEmitter != null) {
                     try {
 
                         sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
                     } catch (ClientAbortException e) {
 
-                        System.out.println("Client removed: " + entry.getKey() + ", " + e.getMessage());
-                        clientBusMap.remove(entry.getKey());
+                        String token = busLocationService.getToken(clientId);
+                        if (token != null)
+                            tokens.remove(token);
+
+                        busLocationService.removeToken(clientId);
+                        System.out.println("Client removed: " + clientId + ", " + e.getMessage());
+                        clientBusMap.remove(clientId);
                     } catch (IOException e) {
 
                         System.out.println(e.getMessage());
@@ -126,27 +142,18 @@ public class BusLocationController {
             @PathVariable("busId") int busId) {
 
         BusLocation busLocation = busLocationService.getLocation(busId);
-        double[][] route = locationCoordService.getRouteCoords(busId);
 
-        System.out.println("CLient - bus map : " + clientBusMap);
-        System.out.println("Client - emitter map : " + emitterMap);
-
-        LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
         if (busLocation == null)
             return new ResponseEntity<>(new LocationAndRoutePackage(), HttpStatus.NOT_FOUND);
 
-        /*
-         * TODO
-         * -> Check to make sure that nobody else can track the bus using a client's id
-         * and token.
-         * -> hide redrecting url.
-         */
-
-        // if ()
-        // return new ResponseEntity<>(new LocationAndRoutePackage(),
-        // HttpStatus.UNAUTHORIZED);
+        double[][] route = locationCoordService.getRouteCoords(busId);
+        LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
 
         clientBusMap.put(clientId, busId);
+        System.out.println("CLient - bus map : " + clientBusMap);
+        System.out.println("Client - emitter map : " + emitterMap);
+        System.out.println("tokens : " + tokens);
+
         return new ResponseEntity<>(locationAndRoutePackage, HttpStatus.OK);
     }
 }
