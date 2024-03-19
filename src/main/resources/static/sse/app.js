@@ -48,9 +48,9 @@ var path = L.polyline([[latitude, longitude]], { color: "red" }).addTo(map);
 function displayLocation(location) {
   const locationContainer = document.getElementById("message-container");
   locationContainer.innerHTML =
-    "<h4> lati: " +
+    "<h4> Latitude: " +
     location.latitude +
-    "<br>longi: " +
+    "<br>Longitude: " +
     location.longitude +
     "<h4>";
 }
@@ -84,7 +84,7 @@ function getBusLocation() {
     .then((response) => {
       console.log(response);
       if (response.status == 404) {
-        throw new Error("Not found");
+        throw new Error("Bus not found");
       }
       if (response.status == 401) {
         throw new Error("Not authorized.");

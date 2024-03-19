@@ -39,9 +39,7 @@ public class BusLocationController {
     }
 
     List<String> tokens = new CopyOnWriteArrayList<>();
-
     Map<Integer, SseEmitter> emitterMap = new ConcurrentHashMap<>();
-
     Map<Integer, Integer> clientBusMap = new ConcurrentHashMap<>();
 
     @GetMapping("/")
@@ -153,10 +151,6 @@ public class BusLocationController {
         System.out.println("CLient - bus map : " + clientBusMap);
         System.out.println("Client - emitter map : " + emitterMap);
         System.out.println("Tokens : " + tokens);
-
-        System.out.println("CLient - bus map : " + clientBusMap);
-        System.out.println("Client - emitter map : " + emitterMap);
-        System.out.println("tokens : " + tokens);
 
         return new ResponseEntity<>(locationAndRoutePackage, HttpStatus.OK);
     }
