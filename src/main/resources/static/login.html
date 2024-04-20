@@ -1,21 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="sse/login-styles.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="sse/login-styles.css" />
     <title>Login</title>
-</head>
+  </head>
 
-<body>
-    <form action="/login" method="post">
-        <h4>User-ID:</h4> <input type="text" name="id" class="t-field"> <br>
-        <h4>Password:</h4> <input type="password" name="pass" class="t-field"> <br>
-        <div class="button-div">
-            <button type="submit" class="submit-btn">Submit</button>
-        </div>
-    </form>
-</body>
+  <body>
+    <div class="container">
+      <div>
+        <h4>User-ID:</h4>
+        <input id="id-field" type="text" name="id" class="t-field" /> <br />
+      </div>
+      <div>
+        <h4>Password:</h4>
+        <input id="pass-field" type="password" name="pass" class="t-field" />
+        <br />
+      </div>
+      <div class="button-div">
+        <button onclick="sendDetails()">Submit</button>
+      </div>
+    </div>
+  </body>
 
+  <script>
+    function sendDetails() {
+      console.log("sending details");
+      let userId = document.getElementById("id-field").value;
+      let password = document.getElementById("pass-field").value;
+
+      fetch("login?id=" + userId + "&pass=" + password)
+        .then((response) => {
+          if (!response.ok) {
+            alert("Invalid User ID or Password!");
+            window.location.href = "login.html";
+          }
+          return response.json();
+        })
+        .then((data) => {
+          window.location.href =
+            "location-tracker.html?" + "id=" + data.id + "&token=" + data.token;
+        });
+    }
+  </script>
 </html>

@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import com.kailasnath.locationtracker.Model.BusLocation;
 import com.kailasnath.locationtracker.Model.BusLocationAndRecordStatus;
 import com.kailasnath.locationtracker.Model.LocationAndRoutePackage;
+import com.kailasnath.locationtracker.Model.UseridToken;
 import com.kailasnath.locationtracker.service.BusLocationService;
 import com.kailasnath.locationtracker.service.LocationCoordService;
 
@@ -47,14 +48,16 @@ public class BusLocationController {
         return "login.html";
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam("id") int id, @RequestParam("pass") String pass) {
-        if (!busLocationService.validate(id, pass)) {
-            return "redirect:login.html";
-        }
+    
+    @GetMapping("/login")
+    public ResponseEntity<UseridToken> login(@RequestParam("id") int id, @RequestParam("pass") String pass) {
+        if (!busLocationService.validate(id, pass))
+            return new ResponseEntity<>(new UseridToken(), HttpStatus.UNAUTHORIZED);
 
         String token = busLocationService.generateAndAssignToken(id);
-        return "redirect:location-tracker.html?" + "id=" + id + "&token=" + token;
+        UseridToken useridToken = new UseridToken(id, token);
+
+        return new ResponseEntity<>(useridToken, HttpStatus.OK);
     }
 
     @GetMapping("/validate/{clientId}/{token}")
