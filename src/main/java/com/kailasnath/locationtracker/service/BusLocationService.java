@@ -28,7 +28,12 @@ public class BusLocationService {
     }
 
     public void updateLocation(@NonNull BusLocation busLocation) {
-        busLocationRepo.save(busLocation);
+        BusLocation dbBusLocation = busLocationRepo.findById(busLocation.getBusId()).orElse(null);
+
+        if(dbBusLocation == null) 
+            busLocationRepo.save(busLocation);
+        else
+            busLocationRepo.updateBusLocation(busLocation.getBusId(), busLocation.getLatitude(),busLocation.getLongitude());
     }
 
     public BusLocation getLocation(int busId) {
