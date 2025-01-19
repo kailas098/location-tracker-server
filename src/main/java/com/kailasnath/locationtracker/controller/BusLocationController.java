@@ -61,9 +61,7 @@ public class BusLocationController {
     }
 
     @GetMapping("/validate/{clientId}/{token}")
-    public ResponseEntity<String> validate(@PathVariable("clientId") int clientId,
-            @PathVariable("token") String token) {
-
+    public ResponseEntity<String> validate(@PathVariable("clientId") int clientId, @PathVariable("token") String token) {
         if (tokens.contains(token))
             return new ResponseEntity<>("Connection already in use", HttpStatus.CONFLICT);
 
@@ -77,52 +75,37 @@ public class BusLocationController {
     @GetMapping("/subscribe/{clientId}")
     public SseEmitter subscribe(@PathVariable("clientId") int clientId) {
         SseEmitter sseEmitter = new SseEmitter();
-
         emitterMap.put(clientId, sseEmitter);
-
-        System.out.println("subcribed clientId: " + clientId);
-
         sseEmitter.onCompletion(() -> emitterMap.remove(clientId));
         sseEmitter.onTimeout(() -> emitterMap.remove(clientId));
-
         return sseEmitter;
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateBusLocation(
-            @NonNull @RequestBody BusLocationAndRecordStatus busLocationAndRecordStatus) {
-
-        // System.out.println("update received");
-
+    public ResponseEntity<String> updateBusLocation(@NonNull @RequestBody BusLocationAndRecordStatus busLocationAndRecordStatus) {
         BusLocation busLocation = new BusLocation(
                 busLocationAndRecordStatus.getBusId(),
                 busLocationAndRecordStatus.getLatitude(),
-                busLocationAndRecordStatus.getLongitude());
-
+                busLocationAndRecordStatus.getLongitude()
+            );
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation);
-
         Iterator<Map.Entry<Integer, Integer>> itr = clientBusMap.entrySet().iterator();
         while (itr.hasNext()) {
             Map.Entry<Integer, Integer> entry = itr.next();
-
             if (entry.getValue() == busLocation.getBusId()) {
                 int clientId = entry.getKey();
                 SseEmitter sseEmitter = emitterMap.get(clientId);
                 if (sseEmitter != null) {
                     try {
-
                         sseEmitter.send(SseEmitter.event().name("location-updated").data(locationAndRoutePackage));
                     } catch (ClientAbortException e) {
-
                         String token = busLocationService.getToken(clientId);
                         if (token != null)
                             tokens.remove(token);
-
                         busLocationService.removeToken(clientId);
                         System.out.println("Client removed: " + clientId + ", " + e.getMessage());
                         clientBusMap.remove(clientId);
                     } catch (IOException e) {
-
                         System.out.println(e.getMessage());
                     }
                 }
@@ -139,22 +122,13 @@ public class BusLocationController {
 
     @GetMapping("/find-bus/{clientId}/{busId}")
     @ResponseBody
-    public ResponseEntity<LocationAndRoutePackage> getLocation(@PathVariable("clientId") int clientId,
-            @PathVariable("busId") int busId) {
-
+    public ResponseEntity<LocationAndRoutePackage> getLocation(@PathVariable("clientId") int clientId, @PathVariable("busId") int busId) {
         BusLocation busLocation = busLocationService.getLocation(busId);
-
         if (busLocation == null)
             return new ResponseEntity<>(new LocationAndRoutePackage(), HttpStatus.NOT_FOUND);
-
         double[][] route = locationCoordService.getRouteCoords(busId);
         LocationAndRoutePackage locationAndRoutePackage = new LocationAndRoutePackage(busLocation, route);
-
         clientBusMap.put(clientId, busId);
-        System.out.println("CLient - bus map : " + clientBusMap);
-        System.out.println("Client - emitter map : " + emitterMap);
-        System.out.println("Tokens : " + tokens);
-
         return new ResponseEntity<>(locationAndRoutePackage, HttpStatus.OK);
     }
 }
